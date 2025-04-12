@@ -21,8 +21,11 @@ export const authenticate = async (req, res, next) => {
     // Kiểm tra token tồn tại
     if (!token) {
       return res.status(401).json({
-        success: false,
-        message: 'Không có token, từ chối truy cập'
+        status: false,
+        message: 'Không có token, từ chối truy cập',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
       });
     }
     
@@ -34,16 +37,11 @@ export const authenticate = async (req, res, next) => {
     
     if (!user) {
       return res.status(401).json({
-        success: false,
-        message: 'Người dùng không tồn tại'
-      });
-    }
-    
-    // Kiểm tra tài khoản có hoạt động không
-    if (!user.active) {
-      return res.status(401).json({
-        success: false,
-        message: 'Tài khoản đã bị khóa'
+        status: false,
+        message: 'Người dùng không tồn tại',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
       });
     }
     
@@ -53,23 +51,31 @@ export const authenticate = async (req, res, next) => {
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
-        success: false,
-        message: 'Token không hợp lệ'
+        status: false,
+        message: 'Token không hợp lệ',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
       });
     }
     
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
-        success: false,
-        message: 'Token đã hết hạn'
+        status: false,
+        message: 'Token đã hết hạn',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
       });
     }
     
     console.error('Lỗi xác thực:', error);
     res.status(500).json({
-      success: false,
+      status: false,
       message: 'Lỗi server',
-      error: error.message
+      data: null,
+      errors: { server: error.message },
+      timestamp: new Date().toISOString()
     });
   }
 };
@@ -89,15 +95,15 @@ export const isAdmin = (req, res, next) => {
 };
 
 /**
- * Middleware kiểm tra vai trò designer
+ * Middleware kiểm tra vai trò employee
  */
-export const isDesigner = (req, res, next) => {
-  if (req.user && req.user.role === 'designer') {
+export const isemployee = (req, res, next) => {
+  if (req.user && req.user.role === 'employee') {
     next();
   } else {
     res.status(403).json({
       success: false,
-      message: 'Không có quyền truy cập, chỉ Designer mới có quyền'
+      message: 'Không có quyền truy cập, chỉ employee mới có quyền'
     });
   }
 };
@@ -207,15 +213,15 @@ export const isProjectLead = async (req, res, next) => {
 };
 
 /**
- * Middleware kiểm tra vai trò admin hoặc designer
+ * Middleware kiểm tra vai trò admin hoặc employee
  */
-export const isAdminOrDesigner = (req, res, next) => {
-  if (req.user && (req.user.role === 'admin' || req.user.role === 'designer')) {
+export const isAdminOremployee = (req, res, next) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'employee')) {
     next();
   } else {
     res.status(403).json({
       success: false,
-      message: 'Không có quyền truy cập, chỉ Admin hoặc Designer mới có quyền'
+      message: 'Không có quyền truy cập, chỉ Admin hoặc employee mới có quyền'
     });
   }
 };

@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 const userSchema = new mongoose.Schema({
   employeeId: {
     type: String,
-    required: true,
     unique: true,
     trim: true
   },
@@ -30,8 +29,8 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'designer'],
-    default: 'designer'
+    enum: ['admin', 'employee'],
+    default: 'employee'
   },
   avatar: {
     type: String,
@@ -58,6 +57,23 @@ const userSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+// Tạo employeeId tự động trước khi lưu
+userSchema.pre('save', async function(next) {
+  try {
+    // Nếu là document mới và không có employeeId, tạo employeeId mới
+    if (this.isNew && !this.employeeId) {
+      // Đếm số lượng user hiện tại để tạo employeeId tiếp theo
+      const count = await mongoose.models.User.countDocuments();
+      // Format: EMP + số thứ tự 4 chữ số + 2 chữ số cuối của năm hiện tại
+      const year = new Date().getFullYear().toString().slice(-2);
+      this.employeeId = `EMP${(count + 1).toString().padStart(4, '0')}${year}`;
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 // Hash password trước khi lưu

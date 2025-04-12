@@ -116,7 +116,7 @@ export const getTasks = async (req, res) => {
     
     // Admin có thể xem tất cả nhiệm vụ
     if (req.user.role !== 'admin') {
-      // Designer chỉ có thể xem nhiệm vụ của dự án họ tham gia
+      // employee chỉ có thể xem nhiệm vụ của dự án họ tham gia
       const userProjects = await Project.find({
         'members.user': req.user._id
       }).select('_id');

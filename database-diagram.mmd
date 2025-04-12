@@ -1,0 +1,168 @@
+---
+title: Widofile Backend Database Diagram
+---
+erDiagram
+    User ||--o{ Project : "tham_gia_vào"
+    User ||--o{ Task : "được_giao"
+    User ||--o{ Document : "tạo"
+    User ||--o{ ForumPost : "tạo"
+    User ||--o{ Comment : "bình_luận"
+    User ||--o{ Note : "tạo"
+    User ||--o{ Schedule : "lên_lịch"
+    
+    Project ||--o{ Task : "chứa"
+    Project ||--o{ Document : "chứa"
+    Project ||--o{ ForumPost : "chứa"
+    Project ||--o{ Note : "liên_quan"
+    Project ||--o{ Schedule : "liên_quan"
+    
+    Task ||--o{ Document : "chứa"
+    Task ||--o{ Comment : "có_bình_luận"
+    Task ||--o{ Note : "có_ghi_chú"
+    Task ||--o{ Schedule : "có_lịch"
+    
+    Document ||--o{ Comment : "có_bình_luận"
+    DocumentCategory ||--o{ Document : "phân_loại"
+    
+    ForumPost ||--o{ Comment : "có_bình_luận"
+    ForumPost ||--o{ Document : "đính_kèm"
+    
+    Comment ||--o{ Comment : "phản_hồi"
+
+    User {
+        ObjectId _id
+        String employeeId
+        String username
+        String password
+        String fullName
+        String email
+        String role
+        String avatar
+        String department
+        String position
+        Date joinDate
+        String[] skills
+        String bio
+        Date createdAt
+        Date updatedAt
+    }
+
+    Project {
+        ObjectId _id
+        String name
+        String description
+        Date startDate
+        Date endDate
+        String status
+        Object[] members
+        String gameGenre
+        String gamePlatform
+        String thumbnail
+        Date createdAt
+        Date updatedAt
+    }
+
+    Task {
+        ObjectId _id
+        String title
+        String description
+        ObjectId project
+        String phase
+        ObjectId assignedTo
+        Date startDate
+        Date dueDate
+        Date completedDate
+        String status
+        String priority
+        Number progress
+        Date createdAt
+        Date updatedAt
+    }
+
+    Document {
+        ObjectId _id
+        String title
+        String description
+        ObjectId category
+        ObjectId project
+        ObjectId task
+        ObjectId creator
+        String filePath
+        String fileType
+        Number fileSize
+        String version
+        Boolean isShared
+        ObjectId[] sharedWith
+        String[] tags
+        Date createdAt
+        Date updatedAt
+    }
+
+    DocumentCategory {
+        ObjectId _id
+        String name
+        String description
+        String icon
+        Date createdAt
+        Date updatedAt
+    }
+
+    Comment {
+        ObjectId _id
+        String content
+        ObjectId author
+        ObjectId forumPost
+        ObjectId task
+        ObjectId document
+        ObjectId user
+        ObjectId parentComment
+        Date createdAt
+        Date updatedAt
+    }
+
+    ForumPost {
+        ObjectId _id
+        String title
+        String content
+        ObjectId author
+        ObjectId project
+        ObjectId[] attachments
+        String[] tags
+        Boolean isPinned
+        Number viewCount
+        Date createdAt
+        Date updatedAt
+    }
+
+    Note {
+        ObjectId _id
+        String title
+        String content
+        ObjectId author
+        ObjectId task
+        ObjectId project
+        Boolean isPrivate
+        String color
+        String[] tags
+        Date createdAt
+        Date updatedAt
+    }
+
+    Schedule {
+        ObjectId _id
+        String title
+        String description
+        Date startTime
+        Date endTime
+        ObjectId user
+        ObjectId project
+        ObjectId task
+        Boolean isRecurring
+        String recurrencePattern
+        String location
+        String color
+        Boolean reminder
+        Number reminderTime
+        Date createdAt
+        Date updatedAt
+    } 

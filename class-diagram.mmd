@@ -1,0 +1,174 @@
+---
+title: Widofile Backend Class Diagram
+---
+classDiagram
+    User "1" -- "*" Project : tham gia
+    User "1" -- "*" Task : được giao
+    User "1" -- "*" Document : tạo
+    User "1" -- "*" ForumPost : đăng
+    User "1" -- "*" Comment : viết
+    User "1" -- "*" Note : tạo
+    User "1" -- "*" Schedule : lên lịch
+    
+    Project "1" -- "*" Task : chứa
+    Project "1" -- "*" Document : chứa
+    Project "1" -- "*" ForumPost : chứa
+    Project "1" -- "*" Note : liên quan
+    Project "1" -- "*" Schedule : liên quan
+    
+    Task "1" -- "*" Document : chứa
+    Task "1" -- "*" Comment : có
+    Task "1" -- "*" Note : có
+    Task "1" -- "*" Schedule : có
+    
+    Document "1" -- "*" Comment : có
+    DocumentCategory "1" -- "*" Document : phân loại
+    
+    ForumPost "1" -- "*" Comment : có
+    ForumPost "1" -- "*" Document : đính kèm
+    
+    Comment "1" -- "*" Comment : phản hồi
+
+    class User {
+        +String employeeId
+        +String username
+        +String password
+        +String fullName
+        +String email
+        +String role
+        +String avatar
+        +String department
+        +String position
+        +Date joinDate
+        +String[] skills
+        +String bio
+        +Date createdAt
+        +Date updatedAt
+        +hashPassword()
+        +getProjects()
+        +getTasks()
+        +getDocuments()
+    }
+
+    class Project {
+        +String name
+        +String description
+        +Date startDate
+        +Date endDate
+        +String status
+        +Object[] members
+        +String gameGenre
+        +String gamePlatform
+        +String thumbnail
+        +Date createdAt
+        +Date updatedAt
+        +getTasks()
+        +getDocuments()
+        +getForumPosts()
+    }
+
+    class Task {
+        +String title
+        +String description
+        +ObjectId project
+        +String phase
+        +ObjectId assignedTo
+        +Date startDate
+        +Date dueDate
+        +Date completedDate
+        +String status
+        +String priority
+        +Number progress
+        +Date createdAt
+        +Date updatedAt
+        +getDocuments()
+        +getComments()
+        +getNotes()
+        +getSchedules()
+    }
+
+    class Document {
+        +String title
+        +String description
+        +ObjectId category
+        +ObjectId project
+        +ObjectId task
+        +ObjectId creator
+        +String filePath
+        +String fileType
+        +Number fileSize
+        +String version
+        +Boolean isShared
+        +ObjectId[] sharedWith
+        +String[] tags
+        +Date createdAt
+        +Date updatedAt
+        +getComments()
+    }
+
+    class DocumentCategory {
+        +String name
+        +String description
+        +String icon
+        +Date createdAt
+        +Date updatedAt
+        +getDocuments()
+    }
+
+    class Comment {
+        +String content
+        +ObjectId author
+        +ObjectId forumPost
+        +ObjectId task
+        +ObjectId document
+        +ObjectId user
+        +ObjectId parentComment
+        +Date createdAt
+        +Date updatedAt
+        +getReplies()
+    }
+
+    class ForumPost {
+        +String title
+        +String content
+        +ObjectId author
+        +ObjectId project
+        +ObjectId[] attachments
+        +String[] tags
+        +Boolean isPinned
+        +Number viewCount
+        +Date createdAt
+        +Date updatedAt
+        +getComments()
+    }
+
+    class Note {
+        +String title
+        +String content
+        +ObjectId author
+        +ObjectId task
+        +ObjectId project
+        +Boolean isPrivate
+        +String color
+        +String[] tags
+        +Date createdAt
+        +Date updatedAt
+    }
+
+    class Schedule {
+        +String title
+        +String description
+        +Date startTime
+        +Date endTime
+        +ObjectId user
+        +ObjectId project
+        +ObjectId task
+        +Boolean isRecurring
+        +String recurrencePattern
+        +String location
+        +String color
+        +Boolean reminder
+        +Number reminderTime
+        +Date createdAt
+        +Date updatedAt
+    } 

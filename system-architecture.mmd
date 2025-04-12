@@ -1,0 +1,138 @@
+---
+title: Widofile Backend - Kiến trúc hệ thống
+---
+flowchart TB
+    subgraph "Frontend"
+        Client[Client Application]
+    end
+    
+    subgraph "Backend API"
+        Router[Routes]
+        Controller[Controllers]
+        Service[Services]
+        Model[Models]
+        Middleware[Middlewares]
+    end
+    
+    subgraph "Cơ sở dữ liệu"
+        DB[(MongoDB Database)]
+    end
+    
+    subgraph "External Services"
+        FileStorage[File Storage]
+        Notifications[Notification System]
+    end
+    
+    Client <--> Router
+    Router --> Middleware
+    Middleware --> Controller
+    Controller --> Service
+    Service --> Model
+    Model <--> DB
+    Service <--> FileStorage
+    Service <--> Notifications
+    
+    subgraph "Models"
+        User_Model[User]
+        Project_Model[Project]
+        Task_Model[Task]
+        Doc_Model[Document]
+        DocCat_Model[DocumentCategory]
+        Comment_Model[Comment]
+        Forum_Model[ForumPost]
+        Note_Model[Note]
+        Schedule_Model[Schedule]
+    end
+    
+    Model --- User_Model
+    Model --- Project_Model
+    Model --- Task_Model
+    Model --- Doc_Model
+    Model --- DocCat_Model
+    Model --- Comment_Model
+    Model --- Forum_Model
+    Model --- Note_Model
+    Model --- Schedule_Model
+    
+    subgraph "Controllers"
+        User_Ctrl[UserController]
+        Project_Ctrl[ProjectController]
+        Task_Ctrl[TaskController]
+        Doc_Ctrl[DocumentController]
+        DocCat_Ctrl[DocumentCategoryController]
+        Comment_Ctrl[CommentController]
+        Forum_Ctrl[ForumPostController]
+        Note_Ctrl[NoteController]
+        Schedule_Ctrl[ScheduleController]
+    end
+    
+    Controller --- User_Ctrl
+    Controller --- Project_Ctrl
+    Controller --- Task_Ctrl
+    Controller --- Doc_Ctrl
+    Controller --- DocCat_Ctrl
+    Controller --- Comment_Ctrl
+    Controller --- Forum_Ctrl
+    Controller --- Note_Ctrl
+    Controller --- Schedule_Ctrl
+    
+    subgraph "Services"
+        User_Svc[UserService]
+        Project_Svc[ProjectService]
+        Task_Svc[TaskService]
+        Doc_Svc[DocumentService]
+        DocCat_Svc[DocumentCategoryService]
+        Comment_Svc[CommentService]
+        Forum_Svc[ForumPostService]
+        Note_Svc[NoteService]
+        Schedule_Svc[ScheduleService]
+        Auth_Svc[AuthService]
+        File_Svc[FileService]
+    end
+    
+    Service --- User_Svc
+    Service --- Project_Svc
+    Service --- Task_Svc
+    Service --- Doc_Svc
+    Service --- DocCat_Svc
+    Service --- Comment_Svc
+    Service --- Forum_Svc
+    Service --- Note_Svc
+    Service --- Schedule_Svc
+    Service --- Auth_Svc
+    Service --- File_Svc
+    
+    subgraph "Routes"
+        User_Route[/api/users]
+        Project_Route[/api/projects]
+        Task_Route[/api/tasks]
+        Doc_Route[/api/documents]
+        DocCat_Route[/api/document-categories]
+        Comment_Route[/api/comments]
+        Forum_Route[/api/forum]
+        Note_Route[/api/notes]
+        Schedule_Route[/api/schedules]
+        Auth_Route[/api/auth]
+    end
+    
+    Router --- User_Route
+    Router --- Project_Route
+    Router --- Task_Route
+    Router --- Doc_Route
+    Router --- DocCat_Route
+    Router --- Comment_Route
+    Router --- Forum_Route
+    Router --- Note_Route
+    Router --- Schedule_Route
+    Router --- Auth_Route
+    
+    User_Route --> User_Ctrl
+    Project_Route --> Project_Ctrl
+    Task_Route --> Task_Ctrl
+    Doc_Route --> Doc_Ctrl
+    DocCat_Route --> DocCat_Ctrl
+    Comment_Route --> Comment_Ctrl
+    Forum_Route --> Forum_Ctrl
+    Note_Route --> Note_Ctrl
+    Schedule_Route --> Schedule_Ctrl
+    Auth_Route --> Auth_Svc 

@@ -1,0 +1,223 @@
+// Widofile Backend Database Diagram
+
+Table User {
+  id ObjectId [primary key]
+  employeeId varchar [unique, not null]
+  username varchar [unique, not null]
+  password varchar [not null]
+  fullName varchar [not null]
+  email varchar [unique, not null]
+  role varchar
+  avatar varchar
+  department varchar
+  position varchar
+  joinDate timestamp
+  skills varchar[]
+  bio varchar
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table Project {
+  id ObjectId [primary key]
+  name varchar [not null]
+  description varchar [not null]
+  startDate timestamp [not null]
+  endDate timestamp
+  status varchar
+  gameGenre varchar
+  gamePlatform varchar
+  thumbnail varchar
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table ProjectMember {
+  id ObjectId [primary key]
+  projectId ObjectId [ref: > Project.id]
+  userId ObjectId [ref: > User.id]
+  role varchar
+  joinDate timestamp
+}
+
+Table Task {
+  id ObjectId [primary key]
+  title varchar [not null]
+  description varchar [not null]
+  projectId ObjectId [ref: > Project.id, not null]
+  phase varchar [not null]
+  assignedToId ObjectId [ref: > User.id, not null]
+  startDate timestamp [not null]
+  dueDate timestamp [not null]
+  completedDate timestamp
+  status varchar
+  priority varchar
+  progress integer
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table Document {
+  id ObjectId [primary key]
+  title varchar [not null]
+  description varchar
+  categoryId ObjectId [ref: > DocumentCategory.id, not null]
+  projectId ObjectId [ref: > Project.id]
+  taskId ObjectId [ref: > Task.id]
+  creatorId ObjectId [ref: > User.id, not null]
+  filePath varchar [not null]
+  fileType varchar [not null]
+  fileSize integer [not null]
+  version varchar
+  isShared boolean
+  tags varchar[]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table DocumentCategory {
+  id ObjectId [primary key]
+  name varchar [unique, not null]
+  description varchar
+  icon varchar
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table Comment {
+  id ObjectId [primary key]
+  content varchar [not null]
+  authorId ObjectId [ref: > User.id, not null]
+  forumPostId ObjectId [ref: > ForumPost.id]
+  taskId ObjectId [ref: > Task.id]
+  documentId ObjectId [ref: > Document.id]
+  userId ObjectId [ref: > User.id]
+  parentCommentId ObjectId [ref: > Comment.id]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table ForumPost {
+  id ObjectId [primary key]
+  title varchar [not null]
+  content varchar [not null]
+  authorId ObjectId [ref: > User.id, not null]
+  projectId ObjectId [ref: > Project.id, not null]
+  isPinned boolean
+  viewCount integer
+  tags varchar[]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table ForumPostAttachment {
+  id ObjectId [primary key]
+  forumPostId ObjectId [ref: > ForumPost.id]
+  documentId ObjectId [ref: > Document.id]
+}
+
+Table Note {
+  id ObjectId [primary key]
+  title varchar [not null]
+  content varchar [not null]
+  authorId ObjectId [ref: > User.id, not null]
+  taskId ObjectId [ref: > Task.id, not null]
+  projectId ObjectId [ref: > Project.id]
+  isPrivate boolean
+  color varchar
+  tags varchar[]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table Schedule {
+  id ObjectId [primary key]
+  title varchar [not null]
+  description varchar
+  startTime timestamp [not null]
+  endTime timestamp [not null]
+  userId ObjectId [ref: > User.id, not null]
+  projectId ObjectId [ref: > Project.id]
+  taskId ObjectId [ref: > Task.id]
+  isRecurring boolean
+  recurrencePattern varchar
+  location varchar
+  color varchar
+  reminder boolean
+  reminderTime integer
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table DocumentSharing {
+  id ObjectId [primary key]
+  documentId ObjectId [ref: > Document.id]
+  sharedWithId ObjectId [ref: > User.id]
+}
+
+Enum UserRole {
+  admin
+  employee
+}
+
+Enum ProjectStatus {
+  planning
+  "in-progress"
+  completed
+  "on-hold"
+}
+
+Enum TaskPhase {
+  concept
+  "pre-production"
+  production
+  testing
+  "post-production"
+}
+
+Enum TaskStatus {
+  "not-started"
+  "in-progress"
+  review
+  completed
+}
+
+Enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+Enum ProjectMemberRole {
+  lead
+  member
+}
+
+// Relationships
+Ref: Task.projectId > Project.id
+Ref: Task.assignedToId > User.id
+Ref: Document.categoryId > DocumentCategory.id
+Ref: Document.projectId > Project.id
+Ref: Document.taskId > Task.id
+Ref: Document.creatorId > User.id
+Ref: Comment.authorId > User.id
+Ref: Comment.forumPostId > ForumPost.id
+Ref: Comment.taskId > Task.id
+Ref: Comment.documentId > Document.id
+Ref: Comment.userId > User.id
+Ref: Comment.parentCommentId > Comment.id
+Ref: ForumPost.authorId > User.id
+Ref: ForumPost.projectId > Project.id
+Ref: Note.authorId > User.id
+Ref: Note.taskId > Task.id
+Ref: Note.projectId > Project.id
+Ref: Schedule.userId > User.id
+Ref: Schedule.projectId > Project.id
+Ref: Schedule.taskId > Task.id
+Ref: ProjectMember.projectId > Project.id
+Ref: ProjectMember.userId > User.id
+Ref: DocumentSharing.documentId > Document.id
+Ref: DocumentSharing.sharedWithId > User.id
+Ref: ForumPostAttachment.forumPostId > ForumPost.id
+Ref: ForumPostAttachment.documentId > Document.id 

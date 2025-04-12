@@ -1,0 +1,126 @@
+[User]
+*id
+employeeId
+username
+password
+fullName
+email
+role
+avatar
+department
+position
+joinDate
+bio
+
+[Project]
+*id
+name
+description
+startDate
+endDate
+status
+gameGenre
+gamePlatform
+thumbnail
+
+[Task]
+*id
+title
+description
+phase
+startDate
+dueDate
+completedDate
+status
+priority
+progress
++project_id
++assignedTo_id
+
+[Document]
+*id
+title
+description
+filePath
+fileType
+fileSize
+version
+isShared
++category_id
++project_id
++task_id
++creator_id
+
+[DocumentCategory]
+*id
+name
+description
+icon
+
+[Comment]
+*id
+content
++author_id
++forumPost_id
++task_id
++document_id
++user_id
++parentComment_id
+
+[ForumPost]
+*id
+title
+content
+isPinned
+viewCount
++author_id
++project_id
+
+[Note]
+*id
+title
+content
+isPrivate
+color
++author_id
++task_id
++project_id
+
+[Schedule]
+*id
+title
+description
+startTime
+endTime
+isRecurring
+recurrencePattern
+location
+color
+reminder
+reminderTime
++user_id
++project_id
++task_id
+
+# Mối quan hệ
+User *--+ Task
+User *--+ Document
+User *--+ ForumPost
+User *--+ Comment
+User *--+ Note
+User *--+ Schedule
+User *--+ Project
+Project *--+ Task
+Project *--+ Document
+Project *--+ ForumPost
+Project *--+ Note
+Project +--+ User
+Task *--+ Document
+Task *--+ Comment
+Task *--+ Note
+Task *--+ Schedule
+Document *--+ Comment
+DocumentCategory *--+ Document
+ForumPost *--+ Comment
+ForumPost *--+ Document
+Comment *--+ Comment 

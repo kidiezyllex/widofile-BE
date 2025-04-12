@@ -159,7 +159,7 @@ export const getDocuments = async (req, res) => {
     
     // Lọc theo quyền truy cập
     if (req.user.role !== 'admin') {
-      // Designer có thể xem:
+      // employee có thể xem:
       // 1. Tài liệu họ tạo
       // 2. Tài liệu được chia sẻ cho họ
       // 3. Tài liệu thuộc dự án họ tham gia

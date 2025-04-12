@@ -66,7 +66,7 @@ export const getProjects = async (req, res) => {
         .populate('members.user', 'fullName avatar email employeeId')
         .sort({ createdAt: -1 });
     } else {
-      // Designer chỉ có thể xem dự án họ tham gia
+      // employee chỉ có thể xem dự án họ tham gia
       projects = await Project.find({
         'members.user': req.user._id
       })

@@ -13,13 +13,25 @@ export const login = async (req, res) => {
     // Find user by username
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(401).json({ message: 'Tên đăng nhập hoặc mật khẩu không đúng' });
+      return res.status(401).json({
+        status: false,
+        message: 'Tên đăng nhập hoặc mật khẩu không đúng',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
+      });
     }
 
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Tên đăng nhập hoặc mật khẩu không đúng' });
+      return res.status(401).json({
+        status: false,
+        message: 'Tên đăng nhập hoặc mật khẩu không đúng',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
+      });
     }
 
     // Create token
@@ -30,18 +42,28 @@ export const login = async (req, res) => {
     );
 
     res.status(200).json({
+      status: true,
       message: 'Đăng nhập thành công',
-      token,
-      user: {
-        id: user._id,
+      data: {
+        _id: user._id,
         username: user.username,
         fullName: user.fullName,
         email: user.email,
-        role: user.role
-      }
+        password: '',
+        role: user.role,
+        token: token
+      },
+      errors: {},
+      timestamp: new Date().toISOString()
     });
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi server', error: error.message });
+    res.status(500).json({
+      status: false,
+      message: 'Lỗi server',
+      data: null,
+      errors: { server: error.message },
+      timestamp: new Date().toISOString()
+    });
   }
 };
 
@@ -50,27 +72,33 @@ export const login = async (req, res) => {
  */
 export const register = async (req, res) => {
   try {
-    const { employeeId, username, fullName, email, password, role = 'designer' } = req.body;
+    const { username, fullName, email, password, role = 'employee' } = req.body;
 
     // Check if user already exists
     const existingUsername = await User.findOne({ username });
     if (existingUsername) {
-      return res.status(400).json({ message: 'Tên đăng nhập đã tồn tại' });
+      return res.status(400).json({
+        status: false,
+        message: 'Tên đăng nhập đã tồn tại',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
+      });
     }
 
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
-      return res.status(400).json({ message: 'Email đã tồn tại' });
+      return res.status(400).json({
+        status: false,
+        message: 'Email đã tồn tại',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
+      });
     }
 
-    const existingEmployeeId = await User.findOne({ employeeId });
-    if (existingEmployeeId) {
-      return res.status(400).json({ message: 'Mã nhân viên đã tồn tại' });
-    }
-
-    // Create new user
+    // Create new user - employeeId sẽ được tự động tạo trong middleware
     const newUser = new User({
-      employeeId,
       username,
       fullName,
       email,
@@ -88,18 +116,28 @@ export const register = async (req, res) => {
     );
 
     res.status(201).json({
+      status: true,
       message: 'Đăng ký thành công',
-      token,
-      user: {
-        id: newUser._id,
+      data: {
+        _id: newUser._id,
         username: newUser.username,
         fullName: newUser.fullName,
         email: newUser.email,
-        role: newUser.role
-      }
+        password: '',
+        role: newUser.role,
+        token: token
+      },
+      errors: {},
+      timestamp: new Date().toISOString()
     });
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi server', error: error.message });
+    res.status(500).json({
+      status: false,
+      message: 'Lỗi server',
+      data: null,
+      errors: { server: error.message },
+      timestamp: new Date().toISOString()
+    });
   }
 };
 
@@ -108,18 +146,36 @@ export const register = async (req, res) => {
  */
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId)
+    const user = await User.findById(req.user._id)
       .select('-password')
       .populate('projects')
       .populate('tasks')
       .populate('documents');
       
     if (!user) {
-      return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+      return res.status(404).json({
+        status: false,
+        message: 'Không tìm thấy người dùng',
+        data: null,
+        errors: {},
+        timestamp: new Date().toISOString()
+      });
     }
     
-    res.status(200).json(user);
+    res.status(200).json({
+      status: true,
+      message: 'Lấy thông tin người dùng thành công',
+      data: user,
+      errors: {},
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi server', error: error.message });
+    res.status(500).json({
+      status: false,
+      message: 'Lỗi server',
+      data: null,
+      errors: { server: error.message },
+      timestamp: new Date().toISOString()
+    });
   }
 }; 

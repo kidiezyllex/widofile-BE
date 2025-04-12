@@ -1,0 +1,12 @@
+{
+  "username": "ninhloan",
+  "fullName": "Ninh Loan",
+  "email": "ninhloan@gmail.com",
+  "password": "Admin123456",
+  "role": "admin"
+}
+
+{
+  "username": "ninhloan",
+  "password": "Admin123456"
+}
