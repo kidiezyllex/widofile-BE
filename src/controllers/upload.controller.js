@@ -1,11 +1,10 @@
-import { uploadFileToSupabase, deleteFileFromSupabase } from '../services/supabase.service.js';
+import { uploadFileToCloudinary, deleteFileFromCloudinary, getSignedUrl } from '../services/cloudinary.service.js';
 import Document from '../models/document.model.js';
 import { v4 as uuidv4 } from 'uuid';
-import supabase from '../services/supabase.service.js';
 import Project from '../models/project.model.js';
 
 /**
- * @desc    Upload file lên Supabase Storage
+ * @desc    Upload file lên Cloudinary
  * @route   POST /upload
  * @access  Private
  */
@@ -42,15 +41,23 @@ export const uploadFile = async (req, res) => {
     const fileExtension = originalName.split('.').pop();
     const uniqueFileName = `${uuidv4()}.${fileExtension}`;
 
-    // Folder path trong storage: userId/categoryId
-    const filePath = `${req.user._id}/${category}`;
+    // Folder path trong Cloudinary: userId/categoryId
+    const folderPath = `widofile/${req.user._id}/${category}`;
 
-    // Upload file lên Supabase
-    const fileData = await uploadFileToSupabase(
+    // Xác định resource_type dựa vào mimetype
+    let resourceType = 'auto';
+    if (req.file.mimetype.startsWith('image/')) {
+      resourceType = 'image';
+    } else if (req.file.mimetype.startsWith('video/')) {
+      resourceType = 'video';
+    }
+
+    // Upload file lên Cloudinary
+    const fileData = await uploadFileToCloudinary(
       req.file.buffer,
       uniqueFileName,
-      filePath,
-      req.file.mimetype
+      folderPath,
+      resourceType
     );
 
     // Tạo document mới trong MongoDB
@@ -61,7 +68,8 @@ export const uploadFile = async (req, res) => {
       project,
       task,
       creator: req.user._id,
-      filePath: fileData.fullPath,
+      filePath: fileData.publicId,
+      fileUrl: fileData.url,
       fileType: req.file.mimetype,
       fileSize: req.file.size,
       version,
@@ -85,8 +93,8 @@ export const uploadFile = async (req, res) => {
       data: {
         document: populatedDocument,
         file: {
-          path: fileData.path,
-          publicUrl: fileData.publicUrl
+          path: fileData.publicId,
+          publicUrl: fileData.url
         }
       }
     });
@@ -100,7 +108,7 @@ export const uploadFile = async (req, res) => {
 };
 
 /**
- * @desc    Xóa file từ Supabase Storage
+ * @desc    Xóa file từ Cloudinary
  * @route   DELETE /upload/:id
  * @access  Private
  */
@@ -136,9 +144,17 @@ export const deleteFile = async (req, res) => {
       }
     }
 
-    // Xóa file từ Supabase Storage
+    // Xác định resource_type dựa vào fileType
+    let resourceType = 'raw';
+    if (document.fileType && document.fileType.startsWith('image/')) {
+      resourceType = 'image';
+    } else if (document.fileType && document.fileType.startsWith('video/')) {
+      resourceType = 'video';
+    }
+
+    // Xóa file từ Cloudinary
     if (document.filePath) {
-      await deleteFileFromSupabase(document.filePath.replace(/^[^/]+\//, ''));
+      await deleteFileFromCloudinary(document.filePath, resourceType);
     }
 
     // Xóa document từ MongoDB
@@ -158,7 +174,7 @@ export const deleteFile = async (req, res) => {
 };
 
 /**
- * @desc    Lấy thông tin file từ Supabase
+ * @desc    Lấy thông tin file từ Cloudinary
  * @route   GET /upload/:id/info
  * @access  Private
  */
@@ -200,21 +216,15 @@ export const getFileInfo = async (req, res) => {
       }
     }
 
-    // Lấy URL tạm thời để download (có thời hạn)
-    const bucketName = document.filePath.split('/')[0];
-    const filePath = document.filePath.replace(`${bucketName}/`, '');
-    
-    const { data, error } = await supabase.storage
-      .from(bucketName)
-      .createSignedUrl(filePath, 60 * 60); // URL có hiệu lực trong 1 giờ
-
-    if (error) throw error;
+    // Đối với Cloudinary, ta có thể sử dụng URL có sẵn hoặc tạo URL có thời hạn
+    // Tạo URL có thời hạn 1 giờ nếu cần giới hạn truy cập
+    const downloadUrl = document.fileUrl || getSignedUrl(document.filePath);
 
     res.json({
       success: true,
       data: {
         document,
-        downloadUrl: data.signedUrl
+        downloadUrl
       }
     });
   } catch (error) {

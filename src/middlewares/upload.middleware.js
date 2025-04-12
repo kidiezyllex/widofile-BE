@@ -1,6 +1,6 @@
 import multer from 'multer';
 
-// Cấu hình lưu trữ file trong memory để xử lý trước khi upload lên Supabase
+// Cấu hình lưu trữ file trong memory để xử lý trước khi upload lên Cloudinary
 const storage = multer.memoryStorage();
 
 // Cấu hình giới hạn file
