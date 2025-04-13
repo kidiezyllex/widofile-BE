@@ -55,21 +55,29 @@ export const updateUser = async (req, res) => {
     }
 
     // Check if user is updating their own profile or is admin
-    if (req.user._id.toString() !== user._id.toString() && !req.user.isAdmin) {
+    if (req.user._id.toString() !== user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this user' });
     }
 
-    user.name = req.body.name || user.name;
+    user.fullName = req.body.fullName || user.fullName;
     user.email = req.body.email || user.email;
+    user.department = req.body.department || user.department;
+    user.position = req.body.position || user.position;
+    user.bio = req.body.bio || user.bio;
+    
+    // Update skills if provided
+    if (req.body.skills) {
+      user.skills = req.body.skills;
+    }
 
     // If password is provided, it will be hashed in the pre-save hook
     if (req.body.password) {
       user.password = req.body.password;
     }
 
-    // Only admin can change admin status
-    if (req.user.isAdmin && req.body.isAdmin !== undefined) {
-      user.isAdmin = req.body.isAdmin;
+    // Only admin can change role
+    if (req.user.role === 'admin' && req.body.role) {
+      user.role = req.body.role;
     }
 
     const updatedUser = await user.save();
@@ -78,9 +86,16 @@ export const updateUser = async (req, res) => {
       message: 'User updated successfully',
       data: {
         _id: updatedUser._id,
-        name: updatedUser.name,
+        username: updatedUser.username,
+        employeeId: updatedUser.employeeId,
+        fullName: updatedUser.fullName,
         email: updatedUser.email,
-        isAdmin: updatedUser.isAdmin,
+        role: updatedUser.role,
+        department: updatedUser.department,
+        position: updatedUser.position,
+        bio: updatedUser.bio,
+        skills: updatedUser.skills,
+        avatar: updatedUser.avatar
       }
     });
   } catch (error) {
@@ -99,7 +114,7 @@ export const deleteUser = async (req, res) => {
 
     if (user) {
       // Prevent deletion of admin users by checking both request user and target user
-      if (user.isAdmin) {
+      if (user.role === 'admin') {
         return res.status(400).json({ message: 'Cannot delete admin user' });
       }
 
