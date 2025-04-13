@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const documentSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
     trim: true
   },
   description: {
@@ -11,8 +10,7 @@ const documentSchema = new mongoose.Schema({
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'DocumentCategory',
-    required: true
+    ref: 'DocumentCategory'
   },
   project: {
     type: mongoose.Schema.Types.ObjectId,

@@ -29,20 +29,13 @@ export const uploadFile = async (req, res) => {
       sharedWith = []
     } = req.body;
 
-    if (!title || !category) {
-      return res.status(400).json({
-        success: false,
-        message: 'Tiêu đề và danh mục là bắt buộc'
-      });
-    }
-
     // Tạo đường dẫn lưu trữ duy nhất cho file
     const originalName = req.file.originalname;
     const fileExtension = originalName.split('.').pop();
     const uniqueFileName = `${uuidv4()}.${fileExtension}`;
 
     // Folder path trong Cloudinary: userId/categoryId
-    const folderPath = `widofile/${req.user._id}/${category}`;
+    const folderPath = `widofile/${req.user._id}/${category || 'uncategorized'}`;
 
     // Xác định resource_type dựa vào mimetype
     let resourceType = 'auto';
@@ -62,7 +55,7 @@ export const uploadFile = async (req, res) => {
 
     // Tạo document mới trong MongoDB
     const document = new Document({
-      title,
+      title: title || `File-${Date.now()}`,
       description,
       category,
       project,
