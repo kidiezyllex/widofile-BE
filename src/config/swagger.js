@@ -34,6 +34,12 @@ const options = {
         bearerAuth: [],
       },
     ],
+    tags: [
+      {
+        name: 'Statistics',
+        description: 'Các API liên quan đến thống kê hệ thống',
+      },
+    ],
   },
   // Paths to the API docs
   apis: [
