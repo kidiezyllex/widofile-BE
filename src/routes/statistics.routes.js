@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect, admin } from '../middlewares/auth.middleware.js';
+import { authenticate as protect } from '../middlewares/auth.middleware.js';
 import {
   getOverviewStatistics,
   getUserStatistics,
