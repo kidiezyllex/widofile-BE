@@ -15,6 +15,7 @@ import documentCategoryRoutes from "./routes/documentCategory.routes.js";
 import forumPostRoutes from "./routes/forumPost.routes.js";
 import commentRoutes from "./routes/comment.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import statisticsRoutes from "./routes/statistics.routes.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   try {
@@ -31,6 +32,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     app.use("/api/forum-posts", forumPostRoutes);
     app.use("/api/comments", commentRoutes);
     app.use("/api/upload", uploadRoutes);
+    app.use("/api/statistics", statisticsRoutes);
     
     // Set up Swagger documentation
     setupSwagger(app);
